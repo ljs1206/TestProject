@@ -1,0 +1,20 @@
+GridBackground {
+    ---grid-background-color: rgb(40, 40, 40);
+    --line-color: rgba(193, 196, 192, 0.1);
+    --thick-line-color: rgba(193, 196, 192, 0.1);
+    --spacing: 15;
+}
+
+.top-Label {
+    background-color: rgb(37, 37, 37);
+}
+
+.toolbar {
+}
+
+.unity-two-pane-split-view {
+    flex-grow: 1;
+    display: flex;
+    visibility: visible;
+    overflow: visible;
+}

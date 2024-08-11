@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Test/CreatePrefabWindow/07_UI/MakePrefabWindow.uss?fileID=7433441132597879392&amp;guid=f408b738d9918ba43a914684600ee13a&amp;type=3#MakePrefabWindow" />
+    <ui:VisualElement name="PrefabWindow" style="flex-grow: 1;">
+        <ui:VisualElement name="Views" style="flex-grow: 1; flex-direction: row-reverse;">
+            <ui:VisualElement name="InspectorView" focusable="true" style="flex-grow: 1; background-color: rgb(40, 40, 40);">
+                <uie:Toolbar focusable="true" name="Toolbar" style="flex-direction: row-reverse; height: 25px;">
+                    <ui:Button text="DeletePrefab" parse-escape-sequences="true" display-tooltip-when-elided="true" name="DeleteBtn" class="toolbar-btn" style="background-color: rgb(91, 91, 91); -unity-font: url(&quot;project://database/Library/unity%20default%20resources?fileID=10102&amp;guid=0000000000000000e000000000000000&amp;type=0#LegacyRuntime&quot;);" />
+                    <ui:Button text="MakePrefab" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MakeBtn" class="toolbar-btn" />
+                    <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NameLabel" class="default-Label" style="flex-direction: column; -unity-text-align: middle-left; flex-grow: 1; left: 2px;" />
+                </uie:Toolbar>
+            </ui:VisualElement>
+            <ui:ScrollView style="flex-grow: 0.45; width: 42px;">
+                <ui:VisualElement name="SerchBar" style="flex-grow: 0; border-right-width: 1px; border-left-color: rgb(39, 39, 39); border-right-color: rgb(39, 39, 39); border-top-color: rgb(39, 39, 39); border-bottom-color: rgb(39, 39, 39); height: 25px; border-bottom-width: 1px; flex-direction: column-reverse; flex-shrink: 0;">
+                    <ui:TextField picking-mode="Ignore" name="Serch" max-length="-1" password="false" auto-correction="false" style="bottom: -2px; flex-grow: 0; white-space: nowrap; flex-wrap: nowrap; flex-direction: row; text-overflow: clip; overflow: hidden; -unity-background-scale-mode: stretch-to-fill; width: 200px;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="PrefabView" style="flex-grow: 1;" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
