@@ -13,7 +13,10 @@
                 <ui:VisualElement name="SerchBar" style="flex-grow: 0; border-right-width: 1px; border-left-color: rgb(39, 39, 39); border-right-color: rgb(39, 39, 39); border-top-color: rgb(39, 39, 39); border-bottom-color: rgb(39, 39, 39); height: 25px; border-bottom-width: 1px; flex-direction: column-reverse; flex-shrink: 0;">
                     <ui:TextField picking-mode="Ignore" name="Serch" max-length="-1" password="false" auto-correction="false" style="bottom: -2px; flex-grow: 0; white-space: nowrap; flex-wrap: nowrap; flex-direction: row; text-overflow: clip; overflow: hidden; -unity-background-scale-mode: stretch-to-fill; width: 200px;" />
                 </ui:VisualElement>
-                <ui:VisualElement name="PrefabView" style="flex-grow: 1;" />
+                <ui:VisualElement name="PrefabView" style="flex-grow: 1; height: auto;" />
+                <ui:VisualElement class="prefab-visual" style="flex-grow: 1; transition-property: all;">
+                    <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" class="prefab-label" />
+                </ui:VisualElement>
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:VisualElement>

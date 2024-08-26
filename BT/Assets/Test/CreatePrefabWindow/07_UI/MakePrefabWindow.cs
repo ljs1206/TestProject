@@ -11,6 +11,11 @@ public class MakePrefabWindow : EditorWindow
     private VisualTreeAsset m_VisualTreeAsset = default;
     [SerializeField]
     private StyleSheet _styleSheet;
+    [SerializeField]
+    private PrefabTableSO _prefabTable;
+
+    private readonly string _prefabVisual = "prefab-visual";
+    private readonly string _prefabLabel = "prefab-label";
 
     [MenuItem("Editor/MakePrefabWindow")]
     public static void ShowExample()
@@ -30,14 +35,25 @@ public class MakePrefabWindow : EditorWindow
 
         Button btn = root.Q<Button>("MakeBtn");
         VisualElement prefabView = root.Q<VisualElement>("PrefabView");
-
-        var prefabs = AssetDatabase.LoadAllAssetsAtPath("Assets/Test/CreatePrefabWindow/03_Prefab");
-        Debug.Log(prefabs.Length);
         
-        foreach(var item in prefabs){
+        // foreach(var item in _prefabTable.prefabList){
+        //     VisualElement visualElement = root.Q<Button>(item.name);
+
+        //     if(visualElement != null)
+        //         prefabView.Remove(visualElement);
+        // }
+
+        foreach(var item in _prefabTable.prefabList){
             Debug.Log(item.name);
             VisualElement element = new VisualElement();
-            element.styleSheets.Add(_styleSheet);
+            element.AddToClassList(_prefabVisual);
+            element.name = item.name;
+
+            Label label = new Label();
+            label.AddToClassList(_prefabLabel);
+            label.text = item.name;
+            
+            element.Add(label);
             prefabView.Add(element);
         }
 
@@ -48,7 +64,7 @@ public class MakePrefabWindow : EditorWindow
     {
         Guid id = Guid.NewGuid();
         GameObject obj = new GameObject();
-        PrefabUtility.SaveAsPrefabAsset(obj, $"{_prefabSavePath}{id}.prefab", out bool isSuccess);
+        _prefabTable.prefabList.Add(PrefabUtility.SaveAsPrefabAsset(obj, $"{_prefabSavePath}{id}.prefab", out bool isSuccess));
         DestroyImmediate(obj);
 
         if(isSuccess){
