@@ -14,7 +14,7 @@
                     <ui:TextField picking-mode="Ignore" name="Serch" max-length="-1" password="false" auto-correction="false" style="bottom: -2px; flex-grow: 0; white-space: nowrap; flex-wrap: nowrap; flex-direction: row; text-overflow: clip; overflow: hidden; -unity-background-scale-mode: stretch-to-fill; width: 200px;" />
                 </ui:VisualElement>
                 <ui:VisualElement name="PrefabView" style="flex-grow: 1; height: auto;" />
-                <ui:VisualElement class="prefab-visual" style="flex-grow: 1; transition-property: all;">
+                <ui:VisualElement name="VisualElement" class="prefab-visual unity-visual-button prefab-visual-select" style="flex-grow: 0; transition-property: all; flex-shrink: 1; display: none;">
                     <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" class="prefab-label" />
                 </ui:VisualElement>
             </ui:ScrollView>
