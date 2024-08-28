@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
+using static Define;
 
 public class MakePrefabWindow : EditorWindow
 {
@@ -47,24 +49,37 @@ public class MakePrefabWindow : EditorWindow
         Button makeBtn = _root.Q<Button>("MakeBtn");
         Button deleteBtn = _root.Q<Button>("DeleteBtn");
         _prefabView = _root.Q<VisualElement>("PrefabView");
+        EnumFlagsField viewType = _root.Q<EnumFlagsField>("ViewType");
+        VisualElement element2D = _root.Q<VisualElement>("2DSetting");
+        VisualElement element3D = _root.Q<VisualElement>("3DSetting");
 
-        if(_prefabTable.prefabList.Count > 0){
+
+
+        if(_prefabTable.prefabList.Select(x => x == null) != null){
             foreach(var item in _prefabTable.prefabList){
                 ViewItem(item);
             }
         }
-        
-        // foreach(var item in _prefabTable.prefabList){
-        //     VisualElement visualElement = root.Q<Button>(item.name);
 
-        //     if(visualElement != null)
-        //         _prefabView.Remove(visualElement);
-        // }
+        viewType.RegisterValueChangedCallback(evt => {
+            switch (viewType.value)
+            {
+                case ViewSetting.None:
+                element2D.style.display = DisplayStyle.None;
+                element3D.style.display = DisplayStyle.None;
+                break;
+                case ViewSetting.View2D:
+                element2D.style.display = DisplayStyle.Flex;
+                break;
+                case ViewSetting.View3D:
+                element3D.style.display = DisplayStyle.Flex;
+                break;
+            }
+        });
 
         makeBtn.clicked += HandleMakeBtnCllikEvent;
         deleteBtn.clicked += HandleDeleteBtnClickEvent;
     }
-
 
     private void ViewItem(GameObject obj){
         VisualElement element = new VisualElement();
@@ -123,9 +138,12 @@ public class MakePrefabWindow : EditorWindow
     {
         GameObject obj = AssetDatabase.LoadAssetAtPath<GameObject>($"{_prefabFilePath}/{_selected.name}.prefab");
 
+        VisualElement _deleteElement = _prefabView.Q<VisualElement>(_selected.name);
+        _prefabView.Remove(_deleteElement);
+
         _prefabTable.prefabList.Remove(obj);
-        EditorUtility.SetDirty(obj);
         AssetDatabase.DeleteAsset($"{_prefabFilePath}/{_selected.name}.prefab");
-        AssetDatabase.Refresh();
+        EditorUtility.SetDirty(_prefabTable);
+        AssetDatabase.SaveAssets();
     }
 }
