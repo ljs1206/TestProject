@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 using static Define;
 
@@ -35,6 +33,9 @@ public class MakePrefabWindow : EditorWindow
 
     private VisualElement _root;
     private VisualElement _prefabView;
+    private Label selectedLabel;
+
+    private Dictionary<string, Label> _viewLableDictionary = new();
     
     [HideInInspector] public VisualElement _selected;
 
@@ -42,24 +43,38 @@ public class MakePrefabWindow : EditorWindow
     {
         _root = rootVisualElement;
         
-        VisualElement labelFromUXML = m_VisualTreeAsset.Instantiate();
-        labelFromUXML.style.flexGrow = 1;
-        _root.Add(labelFromUXML);
+        VisualElement labelFromUxml = m_VisualTreeAsset.Instantiate();
+        labelFromUxml.style.flexGrow = 1;
+        _root.Add(labelFromUxml);
 
         Button makeBtn = _root.Q<Button>("MakeBtn");
         Button deleteBtn = _root.Q<Button>("DeleteBtn");
         _prefabView = _root.Q<VisualElement>("PrefabView");
-        EnumFlagsField viewType = _root.Q<EnumFlagsField>("ViewType");
+        EnumField viewType = _root.Q<EnumField>("ViewType");
         VisualElement element2D = _root.Q<VisualElement>("2DSetting");
         VisualElement element3D = _root.Q<VisualElement>("3DSetting");
+        TextField fileNameField = _root.Q<TextField>("FileName");
+        selectedLabel = _root.Q<Label>("NameLabel");
 
-
-
-        if(_prefabTable.prefabList.Select(x => x == null) != null){
+        if (_prefabTable.prefabList.Count > 0)
+        {
             foreach(var item in _prefabTable.prefabList){
-                ViewItem(item);
+                ViewItem(item.name);
             }
         }
+        
+        fileNameField.RegisterValueChangedCallback(evt =>
+        {
+            if (_selected != null)
+            {
+                _viewLableDictionary.Add(fileNameField.text, _viewLableDictionary[_selected.name]);
+                _viewLableDictionary.Remove(_selected.name);
+                _viewLableDictionary[fileNameField.text].text = fileNameField.text;
+                
+                AssetDatabase.RenameAsset($"{_prefabFilePath}/{_selected.name}.prefab",
+                    fileNameField.text);
+            }
+        });
 
         viewType.RegisterValueChangedCallback(evt => {
             switch (viewType.value)
@@ -81,17 +96,18 @@ public class MakePrefabWindow : EditorWindow
         deleteBtn.clicked += HandleDeleteBtnClickEvent;
     }
 
-    private void ViewItem(GameObject obj){
+    private void ViewItem(string name){
         VisualElement element = new VisualElement();
         element.AddToClassList(_prefabVisual);
-        element.name = obj.name;
+        element.name = name;
 
         element.RegisterCallback<PointerDownEvent>(ElementPointerDownEvent);
 
         Label label = new Label();
         label.AddToClassList(_prefabLabel);
-        label.text = obj.name;
-
+        label.text = name;
+        
+        _viewLableDictionary.Add(name, label);
         element.Add(label);
         _prefabView.Add(element);
     }
@@ -113,6 +129,8 @@ public class MakePrefabWindow : EditorWindow
                 _selected = element;
                 element.RemoveFromClassList(_prefabVisual);
                 element.AddToClassList(_prefabVisualSelect);
+
+                selectedLabel.text = element.name;
             }
         }
     }
@@ -121,11 +139,12 @@ public class MakePrefabWindow : EditorWindow
     {
         Guid id = Guid.NewGuid();
         GameObject obj = new GameObject();
-        _prefabTable.prefabList.Add(PrefabUtility.SaveAsPrefabAsset(obj, $"{_prefabSavePath}{id}.prefab", out bool isSuccess));
+        _prefabTable.prefabList.Add(PrefabUtility.SaveAsPrefabAsset(obj, 
+            $"{_prefabSavePath}{id}.prefab", out bool isSuccess));
         obj.name = id.ToString();
 
         if(isSuccess){
-            ViewItem(obj);
+            ViewItem(obj.name);
             Debug.Log($"Success Create Prefab \n Name : {id} \nPath : {_prefabSavePath}{id}");
         }
         else{
@@ -138,8 +157,8 @@ public class MakePrefabWindow : EditorWindow
     {
         GameObject obj = AssetDatabase.LoadAssetAtPath<GameObject>($"{_prefabFilePath}/{_selected.name}.prefab");
 
-        VisualElement _deleteElement = _prefabView.Q<VisualElement>(_selected.name);
-        _prefabView.Remove(_deleteElement);
+        VisualElement deleteElement = _prefabView.Q<VisualElement>(_selected.name);
+        _prefabView.Remove(deleteElement);
 
         _prefabTable.prefabList.Remove(obj);
         AssetDatabase.DeleteAsset($"{_prefabFilePath}/{_selected.name}.prefab");
