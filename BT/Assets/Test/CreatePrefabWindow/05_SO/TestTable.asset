@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bff060d420c938342b537d3976416a16, type: 3}
   m_Name: TestTable
   m_EditorClassIdentifier: 
-  prefabList:
-  - {fileID: 7910325166334563444, guid: 9f8dd4c9758769149b5348319663e009, type: 3}
+  prefabList: []

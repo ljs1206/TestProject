@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.InputSystem;
 using static Define;
 
 public class MakePrefabWindow : EditorWindow
@@ -50,7 +50,7 @@ public class MakePrefabWindow : EditorWindow
         Button makeBtn = _root.Q<Button>("MakeBtn");
         Button deleteBtn = _root.Q<Button>("DeleteBtn");
         _prefabView = _root.Q<VisualElement>("PrefabView");
-        EnumField viewType = _root.Q<EnumField>("ViewType");
+        EnumField viewType = _root.Q<EnumField>("ViewSetting");
         VisualElement element2D = _root.Q<VisualElement>("2DSetting");
         VisualElement element3D = _root.Q<VisualElement>("3DSetting");
         TextField fileNameField = _root.Q<TextField>("FileName");
@@ -62,20 +62,19 @@ public class MakePrefabWindow : EditorWindow
                 ViewItem(item.name);
             }
         }
-        
         fileNameField.RegisterValueChangedCallback(evt =>
         {
-            if (_selected != null)
+            
+            Debug.Log(_selected.Q<Label>("label").text);
+            _selected.Q<Label>("label").text = fileNameField.text;
+            
+            if (Keyboard.current.enterKey.wasPressedThisFrame)
             {
-                _viewLableDictionary.Add(fileNameField.text, _viewLableDictionary[_selected.name]);
-                _viewLableDictionary.Remove(_selected.name);
-                _viewLableDictionary[fileNameField.text].text = fileNameField.text;
-                
                 AssetDatabase.RenameAsset($"{_prefabFilePath}/{_selected.name}.prefab",
                     fileNameField.text);
             }
         });
-
+        
         viewType.RegisterValueChangedCallback(evt => {
             switch (viewType.value)
             {
@@ -85,9 +84,11 @@ public class MakePrefabWindow : EditorWindow
                 break;
                 case ViewSetting.View2D:
                 element2D.style.display = DisplayStyle.Flex;
+                element3D.style.display = DisplayStyle.None;
                 break;
                 case ViewSetting.View3D:
                 element3D.style.display = DisplayStyle.Flex;
+                element2D.style.display = DisplayStyle.None;
                 break;
             }
         });
@@ -104,6 +105,7 @@ public class MakePrefabWindow : EditorWindow
         element.RegisterCallback<PointerDownEvent>(ElementPointerDownEvent);
 
         Label label = new Label();
+        label.name = "label";
         label.AddToClassList(_prefabLabel);
         label.text = name;
         
