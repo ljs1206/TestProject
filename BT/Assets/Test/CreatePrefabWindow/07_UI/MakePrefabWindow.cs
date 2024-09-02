@@ -8,7 +8,6 @@ using static Define;
 
 public class MakePrefabWindow : EditorWindow
 {
-
     [SerializeField]
     private VisualTreeAsset m_VisualTreeAsset = default;
     [SerializeField]
@@ -22,7 +21,7 @@ public class MakePrefabWindow : EditorWindow
     private readonly string _prefabFilePath = "Assets/Test/CreatePrefabWindow/03_Prefab";
 
     [MenuItem("Editor/Prefab/MakePrefabWindow")]
-    public static void ShowWindow()
+    public static void PShowWindow()
     {
         MakePrefabWindow wnd = GetWindow<MakePrefabWindow>();
         wnd.titleContent = new GUIContent("MakePrefabWindow");
@@ -35,12 +34,13 @@ public class MakePrefabWindow : EditorWindow
     private Label selectedLabel;
     private TextField fileNameField;
 
-    private Dictionary<string, Label> _viewLableDictionary = new();
+    protected Dictionary<string, Label> _viewLableDictionary;
     
     [HideInInspector] public VisualElement _selected;
 
     public void CreateGUI()
     {
+        _viewLableDictionary = new();
         _root = rootVisualElement;
         
         VisualElement labelFromUxml = m_VisualTreeAsset.Instantiate();
@@ -84,10 +84,10 @@ public class MakePrefabWindow : EditorWindow
     }
     
     // TableSO에 들어있는 Prefab을 VisualElement으로 표현하는 함수이다.
-    private void ViewItem(string name){
+    private void ViewItem(string vName){
         VisualElement element = new VisualElement();
         element.AddToClassList(_prefabVisual);
-        element.name = name;
+        element.name = vName;
         
         // Mouse Down Event
         element.RegisterCallback<PointerDownEvent>(ElementPointerDownEvent);
@@ -95,7 +95,10 @@ public class MakePrefabWindow : EditorWindow
         Label label = new Label();
         label.name = "label";
         label.AddToClassList(_prefabLabel);
-        label.text = name;
+        label.text = vName;
+        
+        Debug.Log(_viewLableDictionary);
+        Debug.Log(_prefabView);
         
         _viewLableDictionary.Add(name, label);
         element.Add(label);

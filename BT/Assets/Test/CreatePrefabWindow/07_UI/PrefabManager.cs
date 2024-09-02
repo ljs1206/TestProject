@@ -17,7 +17,7 @@ public class PrefabManager : EditorWindow
     private VisualElement _root;
 
     [MenuItem("Editor/Prefab/PrefabManager")]
-    public static void ShowWindow()
+    public static void CShowWindow()
     {
         PrefabManager wnd = GetWindow<PrefabManager>();
         wnd.titleContent = new GUIContent("PrefabManager");
@@ -172,17 +172,16 @@ public class PrefabManager : EditorWindow
                 DestroyImmediate(obj);
                 return;
         }
-        
+
         obj.name = id.ToString();
         
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(obj,
             $"{_prefabSavePath}{id}.prefab" , out bool isSuccess);
-        Debug.Log(_prefabTable.prefabList);
-        Debug.Log(prefab);
         _prefabTable.prefabList.Add(prefab);
         
-        if(isSuccess){
-            // ViewItem(obj.name);
+        if(isSuccess)
+        {
+            // ViewItem(prefab.name);
             Debug.Log($"Success Create Prefab \n Name : {id} \nPath : {_prefabSavePath}{id}");
         }
         else{
