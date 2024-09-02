@@ -12,4 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bff060d420c938342b537d3976416a16, type: 3}
   m_Name: TestTable
   m_EditorClassIdentifier: 
-  prefabList: []
+  prefabList:
+  - {fileID: 1499673249657355179, guid: 1e4bcd56ce750f747bd7b22c91b78a26, type: 3}
+  - {fileID: 7772634615986257929, guid: 4e9960aeeb7081041ad019d5e42d1ade, type: 3}
+  - {fileID: 2848048899839804883, guid: b95aa6e764b7c044ab530f97911fca87, type: 3}
+  - {fileID: 4596336005800633446, guid: 9bcb08ee83e504646b00a2fc5a56b813, type: 3}
+  - {fileID: 3071754058204813289, guid: 4290bad18a20bec4080da0cc0f96b086, type: 3}
+  - {fileID: 4567756681681289325, guid: 713f4fc8705b43b47a91e529c31453f4, type: 3}
+  - {fileID: 8047120236123455727, guid: bfe77992c1f5cb4468b7b207be142c23, type: 3}
+  - {fileID: 2680240411265613019, guid: 05074165f10e62743be8b6e1857e643c, type: 3}
+  - {fileID: 3598167468898734693, guid: c065209e23da70346ad3f9ae1b6dcab0, type: 3}
+  - {fileID: 5597926643399645126, guid: 769eca37ebfecd04ba9d400b151f6be0, type: 3}
