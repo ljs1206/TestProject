@@ -91,56 +91,6 @@ public class PrefabManager : EditorWindow
                     break;
             }
         });
-        
-        // Value Change Event(RegisterValueChangedCallback) 2D와 3D 둘다 이벤트 구독함
-        // todo(Stat 만들면 넣어주기!!)
-        #region NameField
-        _nameField2D.RegisterValueChangedCallback(evt =>
-        {
-            prefabInfo2D.FileName = _nameField2D.value;
-        });
-        
-        _nameField3D.RegisterValueChangedCallback(evt =>
-        {
-            prefabInfo3D.FileName = _nameField3D.value;
-        });
-        #endregion
-        #region VisualField
-        _visualField2D.RegisterValueChangedCallback(evt =>
-        {
-            prefabInfo2D.VisualPrefab = _visualField2D.value as GameObject;
-        });
-        
-        _visualField3D.RegisterValueChangedCallback(evt =>
-        {
-            prefabInfo3D.VisualPrefab = _visualField3D.value as GameObject;
-        });
-        #endregion
-        #region StatField
-        
-        #endregion
-        #region AIType
-        _aiType2D.RegisterValueChangedCallback(evt =>
-        {
-            prefabInfo2D.AIType = (AIType)_aiType2D.value;
-        });
-        
-        _aiType3D.RegisterValueChangedCallback(evt =>
-        {
-            prefabInfo3D.AIType = (AIType)_aiType3D.value;
-        });
-        #endregion
-        #region ColliderType
-        _colliderType2D.RegisterValueChangedCallback(evt =>
-        {
-            _colliderType2D.value = (ColliderType2D)_colliderType2D.value;
-        });
-
-        _colliderType3D.RegisterValueChangedCallback(evt =>
-        {
-            _colliderType3D.value = (ColliderType3D)_colliderType3D.value;
-        });
-        #endregion
 
         makeBtn.clicked += ClickMakeBtnEvent;
     }
@@ -149,74 +99,135 @@ public class PrefabManager : EditorWindow
     {
         if((ViewSetting)_viewType.value == ViewSetting.None) return;
         
+        GameObject prefab;
+        bool isSuccess, failCreate = false;
         Guid id = Guid.NewGuid();
-        GameObject obj = new GameObject();
-
+        
+        GameObject obj = new GameObject();  
+        obj.name = id.ToString();
+        
         switch (_viewType.value)
         {
             case ViewSetting.View2D:
-                var info2D = obj.AddComponent<DefaultPrefabInfo2D>();
-                info2D.FileName = _nameField2D.value;
+                _prefabTable.prefabList.ForEach(x =>
+                {
+                    if (x.name == _nameField2D.value)
+                    {
+                        Debug.LogWarning($"you make already prefab please change your prefab name.... target : {x.name}");
+                        DestroyImmediate(obj);
+                        failCreate = true;
+                    }
+                });
+                if(failCreate == true) return;
+                
+                #region SettingValue2D
+                obj.AddComponent<DefaultPrefabInfo2D>();
+                prefab = PrefabUtility.SaveAsPrefabAsset(obj,
+                    $"{_prefabSavePath}{_nameField2D.value}.prefab" , out isSuccess);
+                prefab.name = _nameField2D.value;
+
+                DefaultPrefabInfo2D info2D = prefab.GetComponent<DefaultPrefabInfo2D>();
                 info2D.VisualPrefab = _visualField2D.value as GameObject;
-                SetAICompo(obj, info2D);
-                SetColliderCompo(obj, info2D, (ViewSetting)_viewType.value);
+                SetAICompo(prefab);
+                SetColliderCompo(prefab);
+                info2D.AIType = (AIType)_aiType2D.value;
+                info2D.ColliderType = (ColliderType2D)_colliderType2D.value;
+                #endregion
                 break;
             case ViewSetting.View3D:
-                var info3D = obj.AddComponent<DefaultPrefabInfo3D>();
-                info3D.FileName = _nameField3D.value;
-                info3D.VisualPrefab = _visualField2D.value as GameObject;
-                SetAICompo(obj, info3D);
-                SetColliderCompo(obj, info3D, (ViewSetting)_viewType.value);
+                _prefabTable.prefabList.ForEach(x =>
+                {
+                    if (x.name == _nameField3D.value)
+                    {
+                        Debug.LogWarning($"you make already prefab please change your prefab name.... target : {x.name}");
+                        DestroyImmediate(obj);
+                        failCreate = true;
+                    }
+                });
+                if(failCreate == true) return;
+                
+                #region SettingValue3D
+                obj.AddComponent<DefaultPrefabInfo3D>();
+                prefab = PrefabUtility.SaveAsPrefabAsset(obj,
+                    $"{_prefabSavePath}{_nameField3D.value}.prefab" , out isSuccess);
+                prefab.name = _nameField3D.value;
+                
+                DefaultPrefabInfo3D info3D = prefab.GetComponent<DefaultPrefabInfo3D>();
+                info3D.VisualPrefab = _visualField3D.value as GameObject;
+                SetAICompo(prefab);
+                SetColliderCompo(prefab);
+                info3D.AIType = (AIType)_aiType3D.value;
+                info3D.ColliderType = (ColliderType3D)_colliderType3D.value;
+                
+                #endregion
                 break; 
             default:
                 DestroyImmediate(obj);
                 return;
         }
-
-        obj.name = id.ToString();
         
-        GameObject prefab = PrefabUtility.SaveAsPrefabAsset(obj,
-            $"{_prefabSavePath}{id}.prefab" , out bool isSuccess);
         _prefabTable.prefabList.Add(prefab);
         
         if(isSuccess)
         {
-            // ViewItem(prefab.name);
+            MakePrefabWindow._ShowItemEvent.Invoke(prefab.name);
             Debug.Log($"Success Create Prefab \n Name : {id} \nPath : {_prefabSavePath}{id}");
         }
         else{
             Debug.Log("Failure Create Prefab");
         }
+        
         EditorUtility.SetDirty(_prefabTable);
         AssetDatabase.SaveAssets();
         DestroyImmediate(obj);
     }
 
-    private void SetAICompo(GameObject obj, DefaultPrefabInfo info)
+    private void SetAICompo(GameObject obj)
     {
-        switch (info.AIType)
+        if ((ViewSetting)_viewType.value == ViewSetting.View2D)
         {
-            case AIType.None:
-                return;
-            case AIType.BT:
-                // Add BT Compo
-                obj.AddComponent<BehaviourTreeRunner>();
-                return;
-            case AIType.FSM:
-                // Add FSM Compo
-                return;
+            switch (_aiType2D.value)
+            {
+                case AIType.None:
+                    return;
+                case AIType.BT:
+                    // Add BT Compo
+                    Debug.Log("bt");
+                    obj.AddComponent<BehaviourTreeRunner>();
+                    return;
+                case AIType.FSM:
+                    // Add FSM Compo
+                    return;
+            }
+        }
+        else if ((ViewSetting)_viewType.value == ViewSetting.View3D)
+        {
+            switch (_aiType3D.value)
+            {
+                case AIType.None:
+                    return;
+                case AIType.BT:
+                    // Add BT Compo
+                    Debug.Log("bt");
+                    obj.AddComponent<BehaviourTreeRunner>();
+                    return;
+                case AIType.FSM:
+                    // Add FSM Compo
+                    return;
+            }
         }
     }
     
-    private void SetColliderCompo(GameObject obj, DefaultPrefabInfo info, ViewSetting viewType)
+    private void SetColliderCompo(GameObject obj)
     {
-        if (viewType == ViewSetting.View2D)
+        if ((ViewSetting)_viewType.value == ViewSetting.View2D)
         {
-            switch (((DefaultPrefabInfo2D)info).ColliderType)
+            switch (_colliderType2D.value)
             {
                 case ColliderType2D.None:
                     return;
                 case ColliderType2D.Box:
+                    Debug.Log("Box");
                     obj.AddComponent<BoxCollider2D>();
                     return;
                 case ColliderType2D.Capsule:
@@ -227,9 +238,9 @@ public class PrefabManager : EditorWindow
                     return;
             }
         }
-        else if (viewType == ViewSetting.View3D)
+        else if ((ViewSetting)_viewType.value == ViewSetting.View3D)
         {
-            switch (((DefaultPrefabInfo3D)info).ColliderType)
+            switch (_colliderType3D.value)
             {
                 case ColliderType3D.None:
                     return;

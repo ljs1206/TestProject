@@ -3,5 +3,5 @@ using static Define;
 
 public class DefaultPrefabInfo3D : DefaultPrefabInfo
 {
-    [HideInInspector] public ColliderType3D ColliderType;
+    public ColliderType3D ColliderType;
 }

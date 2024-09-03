@@ -15,6 +15,8 @@ public class MakePrefabWindow : EditorWindow
     [SerializeField]
     private PrefabTableSO _prefabTable;
 
+    public static Action<string> _ShowItemEvent;
+
     private readonly string _prefabVisual = "prefab-visual";
     private readonly string _prefabLabel = "prefab-label";
     private readonly string _prefabVisualSelect = "prefab-visual-select";
@@ -27,6 +29,16 @@ public class MakePrefabWindow : EditorWindow
         wnd.titleContent = new GUIContent("MakePrefabWindow");
         wnd.minSize = new Vector2(800, 600);
         wnd.maxSize = new Vector2(800, 600);
+    }
+
+    private void OnEnable()
+    {
+        _ShowItemEvent += ViewItem;
+    }
+
+    private void OnDisable()
+    {
+        _ShowItemEvent -= ViewItem;
     }
 
     private VisualElement _root;
@@ -84,7 +96,7 @@ public class MakePrefabWindow : EditorWindow
     }
     
     // TableSO에 들어있는 Prefab을 VisualElement으로 표현하는 함수이다.
-    private void ViewItem(string vName){
+    public void ViewItem(string vName){
         VisualElement element = new VisualElement();
         element.AddToClassList(_prefabVisual);
         element.name = vName;
@@ -97,10 +109,7 @@ public class MakePrefabWindow : EditorWindow
         label.AddToClassList(_prefabLabel);
         label.text = vName;
         
-        Debug.Log(_viewLableDictionary);
-        Debug.Log(_prefabView);
-        
-        _viewLableDictionary.Add(name, label);
+        _viewLableDictionary.Add(vName, label);
         element.Add(label);
         _prefabView.Add(element);
     }
